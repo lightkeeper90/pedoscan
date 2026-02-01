@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources - PedoScans</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0d14;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+            --accent-yellow: #fbbf24;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #1e293b;
+        }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; background: rgba(10, 13, 20, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 99; }
+        .logo { font-weight: 700; font-size: 22px; letter-spacing: -0.5px; color: var(--text-primary); text-decoration: none; }
+        .nav-links { display: flex; align-items: center; gap: 8px; }
+        .nav-link { padding: 8px 16px; color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; border-radius: 6px; transition: all 0.2s; }
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-link.active { color: var(--text-primary); background: var(--bg-card); }
+        main { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .page-header { margin-bottom: 40px; }
+        .page-header h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+        .page-header p { color: var(--text-secondary); font-size: 16px; }
+        .emergency-banner { background: linear-gradient(135deg, var(--accent-red), #dc2626); padding: 24px 30px; border-radius: 12px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; }
+        .emergency-banner h3 { font-size: 20px; margin-bottom: 8px; }
+        .emergency-banner p { opacity: 0.9; }
+        .emergency-banner .phone { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 700; }
+        .resource-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 50px; }
+        .resource-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 28px; transition: all 0.3s; }
+        .resource-card:hover { border-color: var(--accent-red); transform: translateY(-2px); }
+        .resource-card .icon { font-size: 32px; margin-bottom: 16px; }
+        .resource-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+        .resource-card p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+        .resource-card a { color: var(--accent-red); text-decoration: none; font-weight: 500; font-size: 14px; }
+        .resource-card a:hover { text-decoration: underline; }
+        .section-title { font-size: 24px; font-weight: 700; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        .faq-section { margin-bottom: 50px; }
+        .faq-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+        .faq-question { padding: 20px 24px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .faq-question:hover { background: var(--bg-secondary); }
+        .faq-answer { padding: 0 24px 20px; color: var(--text-secondary); line-height: 1.7; display: none; }
+        .faq-item.active .faq-answer { display: block; }
+        .faq-item.active .faq-question::after { transform: rotate(180deg); }
+        .faq-question::after { content: '▼'; font-size: 12px; transition: transform 0.3s; }
+        .guide-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .guide-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; display: flex; gap: 16px; }
+        .guide-item .number { width: 40px; height: 40px; background: var(--accent-red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        .guide-item h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .guide-item p { color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+        footer { background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 30px 40px; margin-top: 60px; text-align: center; color: var(--text-muted); font-size: 13px; }
+        footer a { color: var(--accent-red); }
+        @media (max-width: 1024px) {
+            .resource-grid { grid-template-columns: repeat(2, 1fr); }
+            .guide-list { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .resource-grid { grid-template-columns: 1fr; }
+            .emergency-banner { flex-direction: column; text-align: center; gap: 16px; }
+            main { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">PedoScans</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Map</a>
+            <a href="database.html" class="nav-link">Database</a>
+            <a href="statistics.html" class="nav-link">Statistics</a>
+            <a href="resources.html" class="nav-link active">Resources</a>
+            <a href="api.html" class="nav-link">API</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Safety Resources</h1>
+            <p>Information and tools to help protect your family and community.</p>
+        </div>
+
+        <div class="emergency-banner">
+            <div>
+                <h3>🚨 Report Suspicious Activity</h3>
+                <p>If you witness a crime in progress, call 911 immediately.</p>
+            </div>
+            <div class="phone">1-800-THE-LOST</div>
+        </div>
+
+        <h2 class="section-title">Reporting & Hotlines</h2>
+        <div class="resource-grid">
+            <div class="resource-card">
+                <div class="icon">📞</div>
+                <h3>National Center for Missing & Exploited Children</h3>
+                <p>24/7 hotline for reporting missing children and child exploitation. Operates the CyberTipline for online exploitation reports.</p>
+                <a href="https://www.missingkids.org" target="_blank">Visit NCMEC →</a>
+            </div>
+            <div class="resource-card">
+                <div class="icon">🌐</div>
+                <h3>CyberTipline</h3>
+                <p>Report online enticement of children, child sexual exploitation, and child pornography. Anonymous reporting available.</p>
+                <a href="https://www.cybertipline.org" target="_blank">Submit a Report →</a>
+            </div>
+            <div class="resource-card">
+                <div class="icon">🏛️</div>
+                <h3>NSOPW.gov</h3>
+                <p>Official U.S. Department of Justice national sex offender public website. Search all state registries in one place.</p>
+                <a href="https://www.nsopw.gov" target="_blank">Search Registry →</a>
+            </div>
+            <div class="resource-card">
+                <div class="icon">🛡️</div>
+                <h3>Internet Crimes Against Children</h3>
+                <p>ICAC Task Force helps state and local law enforcement agencies enhance their investigative response to online child exploitation.</p>
+                <a href="https://www.icactaskforce.org" target="_blank">Learn More →</a>
+            </div>
+            <div class="resource-card">
+                <div class="icon">📱</div>
+                <h3>FBI Tips</h3>
+                <p>Report federal crimes including child exploitation, trafficking, and kidnapping to the FBI's tip line.</p>
+                <a href="https://tips.fbi.gov" target="_blank">Submit FBI Tip →</a>
+            </div>
+            <div class="resource-card">
+                <div class="icon">💬</div>
+                <h3>RAINN Hotline</h3>
+                <p>National Sexual Assault Hotline. Confidential support from trained staff members. Available 24/7.</p>
+                <a href="https://www.rainn.org" target="_blank">1-800-656-4673 →</a>
+            </div>
+        </div>
+
+        <h2 class="section-title">Safety Guidelines</h2>
+        <div class="guide-list">
+            <div class="guide-item">
+                <div class="number">1</div>
+                <div>
+                    <h4>Know Your Neighborhood</h4>
+                    <p>Use our map tool to identify registered offenders in your area. Set up email alerts for new registrations near your address.</p>
+                </div>
+            </div>
+            <div class="guide-item">
+                <div class="number">2</div>
+                <div>
+                    <h4>Talk to Your Children</h4>
+                    <p>Have age-appropriate conversations about personal safety, boundaries, and what to do if someone makes them uncomfortable.</p>
+                </div>
+            </div>
+            <div class="guide-item">
+                <div class="number">3</div>
+                <div>
+                    <h4>Monitor Online Activity</h4>
+                    <p>Keep computers in common areas, use parental controls, and maintain open communication about online interactions.</p>
+                </div>
+            </div>
+            <div class="guide-item">
+                <div class="number">4</div>
+                <div>
+                    <h4>Report Suspicious Behavior</h4>
+                    <p>Trust your instincts. If something seems wrong, report it to local law enforcement. It's better to be cautious.</p>
+                </div>
+            </div>
+            <div class="guide-item">
+                <div class="number">5</div>
+                <div>
+                    <h4>Verify Caregivers</h4>
+                    <p>Run background checks on babysitters, tutors, coaches, and anyone who will have unsupervised access to your children.</p>
+                </div>
+            </div>
+            <div class="guide-item">
+                <div class="number">6</div>
+                <div>
+                    <h4>Create a Safety Plan</h4>
+                    <p>Establish safe words, trusted adults, and clear procedures for what children should do in various emergency situations.</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 50px;">Frequently Asked Questions</h2>
+        <div class="faq-section">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">What is a sex offender registry?</div>
+                <div class="faq-answer">A sex offender registry is a database maintained by law enforcement agencies that contains information about individuals convicted of sex crimes. The purpose is to inform the public about the presence of sex offenders in their communities. In the United States, all 50 states maintain registries that are accessible to the public through the National Sex Offender Public Website (NSOPW.gov).</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">What do the tier classifications mean?</div>
+                <div class="faq-answer">Sex offenders are classified into three tiers based on the severity of their offense. Tier 1 (low risk) includes offenses like indecent exposure and must register for 15 years. Tier 2 (moderate risk) includes offenses involving minors aged 12-17 and requires 25-year registration. Tier 3 (high risk) includes the most serious offenses such as sexual assault and requires lifetime registration.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Can I receive alerts when an offender moves near me?</div>
+                <div class="faq-answer">Yes, PedoScans offers email alerts for your specified address or neighborhood. When a registered sex offender moves within a certain radius of your location, you'll receive an automatic notification. You can set up alerts on the home page by entering your email address.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">Is it legal to access this information?</div>
+                <div class="faq-answer">Yes, sex offender registry information is public record under federal law (Megan's Law and the Adam Walsh Act). However, using this information to harass, threaten, or harm registered offenders is illegal. This information is provided solely for public safety awareness.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">How often is the data updated?</div>
+                <div class="faq-answer">Our database is updated multiple times daily by aggregating data from all 50 state registries and the federal NSOPW database. Most changes (new registrations, address updates, compliance status) are reflected within 24-48 hours of being reported to state authorities.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">What should I do if an offender violates their registration requirements?</div>
+                <div class="faq-answer">If you believe a registered sex offender is violating their registration requirements (not living at their registered address, not reporting to law enforcement, etc.), contact your local police department or sheriff's office immediately. You can also report violations through our platform using the "Report Tip" button.</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 PedoScans. Data aggregated from public registries. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+    </footer>
+
+    <script>
+        function toggleFaq(element) {
+            const item = element.parentElement;
+            item.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

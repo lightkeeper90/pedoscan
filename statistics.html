@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - PedoScans</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0d14;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+            --accent-yellow: #fbbf24;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #1e293b;
+        }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; background: rgba(10, 13, 20, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 99; }
+        .logo { font-weight: 700; font-size: 22px; letter-spacing: -0.5px; color: var(--text-primary); text-decoration: none; }
+        .nav-links { display: flex; align-items: center; gap: 8px; }
+        .nav-link { padding: 8px 16px; color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; border-radius: 6px; transition: all 0.2s; }
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-link.active { color: var(--text-primary); background: var(--bg-card); }
+        main { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .page-header { margin-bottom: 40px; }
+        .page-header h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+        .page-header p { color: var(--text-secondary); font-size: 16px; }
+        .stats-overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
+        .stat-card h3 { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        .stat-card h3.red { color: var(--accent-red); }
+        .stat-card h3.orange { color: var(--accent-orange); }
+        .stat-card h3.yellow { color: var(--accent-yellow); }
+        .stat-card h3.green { color: var(--accent-green); }
+        .stat-card p { color: var(--text-secondary); font-size: 14px; }
+        .stat-card .trend { font-size: 12px; margin-top: 8px; }
+        .stat-card .trend.up { color: var(--accent-red); }
+        .stat-card .trend.down { color: var(--accent-green); }
+        .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 40px; }
+        .chart-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
+        .chart-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+        .chart-container { height: 300px; position: relative; }
+        .full-width { grid-column: span 2; }
+        .data-table { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 40px; }
+        .data-table h3 { padding: 20px; font-size: 16px; font-weight: 600; border-bottom: 1px solid var(--border-color); }
+        .data-table table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: var(--bg-secondary); padding: 14px 20px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .data-table td { padding: 14px 20px; border-top: 1px solid var(--border-color); font-size: 14px; }
+        .data-table tr:hover td { background: rgba(239, 68, 68, 0.02); }
+        .bar { height: 8px; background: var(--accent-red); border-radius: 4px; }
+        footer { background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 30px 40px; margin-top: 60px; text-align: center; color: var(--text-muted); font-size: 13px; }
+        footer a { color: var(--accent-red); }
+        @media (max-width: 1024px) {
+            .stats-overview { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+        @media (max-width: 768px) {
+            .stats-overview { grid-template-columns: 1fr; }
+            main { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">PedoScans</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Map</a>
+            <a href="database.html" class="nav-link">Database</a>
+            <a href="statistics.html" class="nav-link active">Statistics</a>
+            <a href="resources.html" class="nav-link">Resources</a>
+            <a href="api.html" class="nav-link">API</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>National Statistics</h1>
+            <p>Comprehensive data analysis of sex offender registrations across the United States.</p>
+        </div>
+
+        <div class="stats-overview">
+            <div class="stat-card">
+                <h3 class="red">917,432</h3>
+                <p>Total Registered Offenders</p>
+                <div class="trend up">↑ 2.1% from last year</div>
+            </div>
+            <div class="stat-card">
+                <h3 class="orange">156,789</h3>
+                <p>Tier 3 (High Risk)</p>
+                <div class="trend up">↑ 3.4% from last year</div>
+            </div>
+            <div class="stat-card">
+                <h3 class="yellow">89.2%</h3>
+                <p>Compliance Rate</p>
+                <div class="trend down">↓ 0.8% from last year</div>
+            </div>
+            <div class="stat-card">
+                <h3 class="green">23,456</h3>
+                <p>Removed from Registry</p>
+                <div class="trend up">↑ 5.2% from last year</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Offenders by Tier Classification</h3>
+                <div class="chart-container">
+                    <canvas id="tierChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Offense Type Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="offenseChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card full-width">
+                <h3>Monthly Registration Trends (2024)</h3>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-table">
+            <h3>Top 10 States by Registered Offenders</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>State</th>
+                        <th>Total Offenders</th>
+                        <th>Per 100k Population</th>
+                        <th>Distribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>California</td>
+                        <td>108,456</td>
+                        <td>274</td>
+                        <td><div class="bar" style="width: 100%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Texas</td>
+                        <td>95,123</td>
+                        <td>328</td>
+                        <td><div class="bar" style="width: 87%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Florida</td>
+                        <td>76,234</td>
+                        <td>355</td>
+                        <td><div class="bar" style="width: 70%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>New York</td>
+                        <td>43,567</td>
+                        <td>224</td>
+                        <td><div class="bar" style="width: 40%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Michigan</td>
+                        <td>42,890</td>
+                        <td>430</td>
+                        <td><div class="bar" style="width: 39%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Ohio</td>
+                        <td>35,672</td>
+                        <td>305</td>
+                        <td><div class="bar" style="width: 33%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Pennsylvania</td>
+                        <td>28,934</td>
+                        <td>226</td>
+                        <td><div class="bar" style="width: 27%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Illinois</td>
+                        <td>27,456</td>
+                        <td>217</td>
+                        <td><div class="bar" style="width: 25%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Georgia</td>
+                        <td>24,567</td>
+                        <td>231</td>
+                        <td><div class="bar" style="width: 23%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>Arizona</td>
+                        <td>23,456</td>
+                        <td>322</td>
+                        <td><div class="bar" style="width: 22%;"></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 PedoScans. Data aggregated from public registries. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+    </footer>
+
+    <script>
+        // Tier Distribution Chart
+        new Chart(document.getElementById('tierChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Tier 1 (Low)', 'Tier 2 (Moderate)', 'Tier 3 (High)'],
+                datasets: [{
+                    data: [418487, 342156, 156789],
+                    backgroundColor: ['#fbbf24', '#f97316', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#94a3b8', padding: 20 }
+                    }
+                }
+            }
+        });
+
+        // Offense Type Chart
+        new Chart(document.getElementById('offenseChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Sexual Assault', 'CSAM Possession', 'Child Molestation', 'Online Solicitation', 'Indecent Exposure', 'Other'],
+                datasets: [{
+                    data: [245000, 198000, 167000, 143000, 89000, 75432],
+                    backgroundColor: '#ef4444',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
+                    y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // Monthly Trend Chart
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'New Registrations',
+                    data: [2345, 2567, 2890, 3123, 2987, 3245, 3456, 3678, 3234, 2890, 2567, 2450],
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Removals',
+                    data: [1890, 2100, 2345, 2567, 2234, 1987, 2123, 2345, 2567, 2890, 2678, 2456],
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#94a3b8' }
+                    }
+                },
+                scales: {
+                    x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } },
+                    y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

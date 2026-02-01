@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - PedoScans</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0d14;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+            --accent-yellow: #fbbf24;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-purple: #a855f7;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #1e293b;
+        }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; background: rgba(10, 13, 20, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 99; }
+        .logo { font-weight: 700; font-size: 22px; letter-spacing: -0.5px; color: var(--text-primary); text-decoration: none; }
+        .nav-links { display: flex; align-items: center; gap: 8px; }
+        .nav-link { padding: 8px 16px; color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; border-radius: 6px; transition: all 0.2s; }
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-link.active { color: var(--text-primary); background: var(--bg-card); }
+        .layout { display: grid; grid-template-columns: 250px 1fr; min-height: calc(100vh - 65px); }
+        .sidebar { background: var(--bg-secondary); border-right: 1px solid var(--border-color); padding: 30px 20px; position: sticky; top: 65px; height: calc(100vh - 65px); overflow-y: auto; }
+        .sidebar h4 { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; margin-top: 24px; }
+        .sidebar h4:first-child { margin-top: 0; }
+        .sidebar a { display: block; padding: 8px 12px; color: var(--text-secondary); text-decoration: none; font-size: 14px; border-radius: 6px; margin-bottom: 4px; transition: all 0.2s; }
+        .sidebar a:hover { color: var(--text-primary); background: var(--bg-card); }
+        .sidebar a.active { color: var(--accent-red); background: rgba(239, 68, 68, 0.1); }
+        main { padding: 40px 60px; max-width: 900px; }
+        .page-header { margin-bottom: 40px; }
+        .page-header h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+        .page-header p { color: var(--text-secondary); font-size: 16px; line-height: 1.6; }
+        .section { margin-bottom: 50px; }
+        .section h2 { font-size: 24px; font-weight: 600; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        .section h3 { font-size: 18px; font-weight: 600; margin: 24px 0 12px; }
+        .section p { color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px; }
+        .endpoint { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .endpoint-header { padding: 16px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); }
+        .method { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .method.get { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); }
+        .method.post { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+        .method.put { background: rgba(249, 115, 22, 0.15); color: var(--accent-orange); }
+        .method.delete { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+        .endpoint-path { font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+        .endpoint-body { padding: 20px; }
+        .endpoint-body p { margin-bottom: 12px; }
+        .param-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .param-table th { text-align: left; padding: 10px 12px; background: var(--bg-secondary); font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .param-table td { padding: 10px 12px; border-top: 1px solid var(--border-color); font-size: 14px; }
+        .param-table code { background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent-purple); }
+        .code-block { background: var(--bg-secondary); border-radius: 8px; padding: 20px; margin: 16px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .string { color: var(--accent-green); }
+        .code-block .number { color: var(--accent-orange); }
+        .code-block .key { color: var(--accent-purple); }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+        .badge.required { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+        .badge.optional { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+        .api-key-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 24px; margin: 20px 0; }
+        .api-key-box h4 { font-size: 16px; margin-bottom: 12px; }
+        .api-key-box input { width: 100%; padding: 12px 16px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; margin-bottom: 12px; }
+        .api-key-box button { padding: 10px 20px; background: var(--accent-red); border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer; }
+        footer { background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 30px 40px; text-align: center; color: var(--text-muted); font-size: 13px; }
+        footer a { color: var(--accent-red); }
+        @media (max-width: 1024px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            main { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">PedoScans</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Map</a>
+            <a href="database.html" class="nav-link">Database</a>
+            <a href="statistics.html" class="nav-link">Statistics</a>
+            <a href="resources.html" class="nav-link">Resources</a>
+            <a href="api.html" class="nav-link active">API</a>
+        </div>
+    </nav>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h4>Getting Started</h4>
+            <a href="#introduction" class="active">Introduction</a>
+            <a href="#authentication">Authentication</a>
+            <a href="#rate-limits">Rate Limits</a>
+            
+            <h4>Endpoints</h4>
+            <a href="#search">Search Offenders</a>
+            <a href="#get-offender">Get Offender</a>
+            <a href="#nearby">Nearby Search</a>
+            <a href="#statistics">Statistics</a>
+            <a href="#alerts">Alerts</a>
+            
+            <h4>Resources</h4>
+            <a href="#errors">Error Handling</a>
+            <a href="#changelog">Changelog</a>
+        </aside>
+
+        <main>
+            <div class="page-header">
+                <h1>API Documentation</h1>
+                <p>Integrate PedoScans data into your applications. Our RESTful API provides access to the national sex offender registry database.</p>
+            </div>
+
+            <div class="section" id="introduction">
+                <h2>Introduction</h2>
+                <p>The PedoScans API allows developers to access sex offender registry data programmatically. Use this API to build safety applications, integrate with neighborhood watch systems, or create custom alerting solutions.</p>
+                <p>Base URL: <code>https://api.pedoscans.com/v1</code></p>
+                <p>All API responses are returned in JSON format. Requests must include your API key in the header.</p>
+            </div>
+
+            <div class="section" id="authentication">
+                <h2>Authentication</h2>
+                <p>All API requests require authentication using an API key. Include your key in the request header:</p>
+                <div class="code-block">
+                    <pre>Authorization: Bearer YOUR_API_KEY</pre>
+                </div>
+                
+                <div class="api-key-box">
+                    <h4>🔑 Get Your API Key</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">Enter your email to receive an API key. Free tier includes 1,000 requests/month.</p>
+                    <input type="email" placeholder="your@email.com">
+                    <button onclick="alert('API key request submitted! Check your email.')">Request API Key</button>
+                </div>
+            </div>
+
+            <div class="section" id="rate-limits">
+                <h2>Rate Limits</h2>
+                <p>API requests are rate-limited based on your plan:</p>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Requests/Month</th>
+                            <th>Requests/Second</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Free</td>
+                            <td>1,000</td>
+                            <td>1</td>
+                            <td>$0</td>
+                        </tr>
+                        <tr>
+                            <td>Developer</td>
+                            <td>50,000</td>
+                            <td>10</td>
+                            <td>$49/mo</td>
+                        </tr>
+                        <tr>
+                            <td>Professional</td>
+                            <td>500,000</td>
+                            <td>50</td>
+                            <td>$199/mo</td>
+                        </tr>
+                        <tr>
+                            <td>Enterprise</td>
+                            <td>Unlimited</td>
+                            <td>100</td>
+                            <td>Contact us</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section" id="search">
+                <h2>Search Offenders</h2>
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/offenders/search</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <p>Search the offender database with various filters.</p>
+                        <h3>Query Parameters</h3>
+                        <table class="param-table">
+                            <thead>
+                                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>name</code> <span class="badge optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Search by offender name (partial match)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>state</code> <span class="badge optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Two-letter state code (e.g., CA, TX)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>city</code> <span class="badge optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>City name</td>
+                                </tr>
+                                <tr>
+                                    <td><code>zip</code> <span class="badge optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>5-digit ZIP code</td>
+                                </tr>
+                                <tr>
+                                    <td><code>tier</code> <span class="badge optional">optional</span></td>
+                                    <td>integer</td>
+                                    <td>Risk tier (1, 2, or 3)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>limit</code> <span class="badge optional">optional</span></td>
+                                    <td>integer</td>
+                                    <td>Results per page (default: 25, max: 100)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>offset</code> <span class="badge optional">optional</span></td>
+                                    <td>integer</td>
+                                    <td>Pagination offset</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h3>Example Request</h3>
+                        <div class="code-block">
+                            <pre>curl -X GET "https://api.pedoscans.com/v1/offenders/search?state=TX&tier=3&limit=10" \
+  -H "Authorization: Bearer YOUR_API_KEY"</pre>
+                        </div>
+                        <h3>Example Response</h3>
+                        <div class="code-block">
+                            <pre>{
+  <span class="key">"success"</span>: <span class="number">true</span>,
+  <span class="key">"total"</span>: <span class="number">15678</span>,
+  <span class="key">"limit"</span>: <span class="number">10</span>,
+  <span class="key">"offset"</span>: <span class="number">0</span>,
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="string">"TX-2019-45678"</span>,
+      <span class="key">"name"</span>: <span class="string">"[REDACTED]"</span>,
+      <span class="key">"tier"</span>: <span class="number">3</span>,
+      <span class="key">"city"</span>: <span class="string">"Houston"</span>,
+      <span class="key">"state"</span>: <span class="string">"TX"</span>,
+      <span class="key">"zip"</span>: <span class="string">"77001"</span>,
+      <span class="key">"offense"</span>: <span class="string">"Sexual Assault"</span>,
+      <span class="key">"registered"</span>: <span class="string">"2019-03-15"</span>,
+      <span class="key">"compliant"</span>: <span class="number">true</span>
+    },
+    <span class="comment">// ... more results</span>
+  ]
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="nearby">
+                <h2>Nearby Search</h2>
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/offenders/nearby</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <p>Find offenders within a specified radius of coordinates or address.</p>
+                        <h3>Query Parameters</h3>
+                        <table class="param-table">
+                            <thead>
+                                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>lat</code> <span class="badge required">required*</span></td>
+                                    <td>float</td>
+                                    <td>Latitude coordinate</td>
+                                </tr>
+                                <tr>
+                                    <td><code>lng</code> <span class="badge required">required*</span></td>
+                                    <td>float</td>
+                                    <td>Longitude coordinate</td>
+                                </tr>
+                                <tr>
+                                    <td><code>address</code> <span class="badge required">required*</span></td>
+                                    <td>string</td>
+                                    <td>Street address (alternative to lat/lng)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>radius</code> <span class="badge optional">optional</span></td>
+                                    <td>float</td>
+                                    <td>Search radius in miles (default: 5, max: 50)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size: 13px; color: var(--text-muted);">* Either lat/lng OR address is required</p>
+                        <h3>Example Request</h3>
+                        <div class="code-block">
+                            <pre>curl -X GET "https://api.pedoscans.com/v1/offenders/nearby?lat=29.7604&lng=-95.3698&radius=5" \
+  -H "Authorization: Bearer YOUR_API_KEY"</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="statistics">
+                <h2>Statistics</h2>
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/statistics</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <p>Retrieve aggregate statistics for the registry.</p>
+                        <h3>Query Parameters</h3>
+                        <table class="param-table">
+                            <thead>
+                                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>state</code> <span class="badge optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Filter by state (omit for national stats)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>group_by</code> <span class="badge optional">optional</span></td>
+                                    <td>string</td>
+                                    <td>Group results by: state, tier, offense, year</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="alerts">
+                <h2>Alerts</h2>
+                <div class="endpoint">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/alerts</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <p>Create a new alert subscription for a location.</p>
+                        <h3>Request Body</h3>
+                        <div class="code-block">
+                            <pre>{
+  <span class="key">"email"</span>: <span class="string">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95e0e6f0e7d5f0edf4f8e5f9f0bbf6faf8">[email&#160;protected]</a>"</span>,
+  <span class="key">"address"</span>: <span class="string">"123 Main St, Houston, TX 77001"</span>,
+  <span class="key">"radius"</span>: <span class="number">5</span>,
+  <span class="key">"tiers"</span>: [<span class="number">2</span>, <span class="number">3</span>]
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="errors">
+                <h2>Error Handling</h2>
+                <p>The API uses standard HTTP status codes. All errors return a JSON response with details:</p>
+                <div class="code-block">
+                    <pre>{
+  <span class="key">"success"</span>: <span class="number">false</span>,
+  <span class="key">"error"</span>: {
+    <span class="key">"code"</span>: <span class="string">"RATE_LIMIT_EXCEEDED"</span>,
+    <span class="key">"message"</span>: <span class="string">"You have exceeded your rate limit. Please upgrade your plan."</span>
+  }
+}</pre>
+                </div>
+                <table class="param-table">
+                    <thead>
+                        <tr><th>Status Code</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>200</td><td>Success</td></tr>
+                        <tr><td>400</td><td>Bad Request - Invalid parameters</td></tr>
+                        <tr><td>401</td><td>Unauthorized - Invalid or missing API key</td></tr>
+                        <tr><td>403</td><td>Forbidden - Insufficient permissions</td></tr>
+                        <tr><td>429</td><td>Too Many Requests - Rate limit exceeded</td></tr>
+                        <tr><td>500</td><td>Internal Server Error</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2024 PedoScans API. | <a href="privacy.html">Privacy Policy</a> | <a
